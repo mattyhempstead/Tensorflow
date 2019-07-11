@@ -30,7 +30,7 @@ def resultsString(winners):
     '''
         Returns a string showing the stats of wins/draws/losses from an array of winners
     '''
-    return ("Won: {}/{n}, Tie: {}/{n}, Loss:{}/{n}".format(
+    return ("Won: {}/{n} - Tie: {}/{n} - Loss: {}/{n}".format(
         winners.count(1), 
         winners.count(0),
         winners.count(-1),
@@ -89,7 +89,11 @@ while True:
         # rewards = gameResults["pastBoardRewards"]
         # states = gameResults["pastBoardStates"]
 
-        print("After Train - {}".format(resultsString(gameResults["winners"])))
+        print("Train: {}/{} - {}".format(
+            i+1,
+            count,
+            resultsString(gameResults["winners"])
+        ))
 
         if not os.path.exists("models/cp"):	
             os.mkdir("models/cp")

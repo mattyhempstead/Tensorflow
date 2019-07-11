@@ -51,7 +51,7 @@ def playTrainingGames(n, game, model, opponent, d=0.9):
 
         # game.printGame()
         # print("winner #{}: {}".format(k, winner))
-        print("Game #{}/{}".format(k,n), end='\r')
+        print("Game #{}/{}".format(k+1,n), end='\r')
 
         game.resetGame()
         stateCount = 0
