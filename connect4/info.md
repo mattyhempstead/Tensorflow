@@ -79,3 +79,33 @@ Network rates future state to select move.
 
 
 
+
+# Training issue
+I am currently training the bots to output the Q value predicted by the next state.
+This means that after the bot has been trained to improve, these Q values might no longer be relevant and
+the bot might actually be training to get worse.
+
+e.g. At one point in training, the agent wins going from state A -> B -> C
+The Q values outputted during this game are:
+Q(A) = 0.5, Q(B) = 0.6, Q(C) = 0.7
+
+Later in the simulation, after the agent has been trained to be objectively better, it now outputs
+Q(A) = 0.7, Q(B) = 0.8, Q(C) = 0.9
+
+If the agent was to be trained on this previous win, it would be trained such that
+Q(A) -> 0.6, Q(B) -> 0.7, Q(C) -> 1
+This would make the agent objectively worse.
+
+
+
+The ultimate aim is to make it so that moves which lead to winning should be encouraged to play.
+Moves which lead to losing should be discouraged to play.
+
+If the agent is trained based on the decaying reward functionality, will a similar issue happen?
+Since the moves are selected relative to the Q values outputted for alternate moves, if an agent is
+encouraged to output a move more than it is encouraged to output the alternate moves, it will learn
+to select this move.
+e.g. An agent might only be trained to output 0.1 and 0.15 for a move near the beginning, 
+yet it will still learn to select the second move over the first.
+
+This method will also encourage winning quicker.
