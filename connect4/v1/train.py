@@ -4,58 +4,26 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
-# print("tf version", tf.__version__)
+
+from connect4 import Connect4Game, RandomAgent, GoodAgent
+from playTrainingGames import playTrainingGames
+from createModel import createModel
 
 # Stop some of the random logging
 os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '3'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-
-
-def getModel():
-    if len(sys.argv) == 2:
-        model = keras.models.load_model("models/" + sys.argv[1])
-        return model
-    else:
-        model = keras.Sequential()
-
-        # model.add(keras.layers.Conv2D(128, (2, 2), activation='tanh', input_shape=(7, 6, 1)))
-        # model.add(keras.layers.Conv2D(128, (2, 2), activation='tanh'))
-        # model.add(keras.layers.Conv2D(256, (2, 2), activation='tanh'))
-        # model.add(keras.layers.Conv2D(256, (2, 2), activation='tanh'))
-
-        model.add(keras.layers.Conv2D(128, (3, 3), activation='tanh', input_shape=(7, 6, 1)))
-        model.add(keras.layers.Conv2D(256, (3, 3), activation='tanh'))
-
-        model.add(keras.layers.Flatten())
-        model.add(keras.layers.Dense(512, activation='tanh'))
-        model.add(keras.layers.Dense(256, activation='tanh'))
-        model.add(keras.layers.Dense(256, activation='tanh'))
-        # model.add(keras.layers.Dense(256, activation='tanh'))
-        model.add(keras.layers.Dense(1, activation='sigmoid'))
-
-        # model.add(keras.layers.Dropout(0.1))
-
-        model.compile(
-            optimizer='adam', #tf.keras.optimizers.Adam(0.001)
-            loss=keras.losses.binary_crossentropy,
-            metrics=[],
-        )
-        return model
-
-
-
-model = getModel()
+# Load or create new model
+if len(sys.argv) == 2:
+    model = keras.models.load_model("models/" + sys.argv[1])
+else:
+    model = createModel()
 model.summary()
 
-
-
-from connect4 import Connect4Game, RandomAgent, GoodAgent
-from playTrainingGames import playTrainingGames
-
+# Create base game
 game = Connect4Game()
-# opponent = RandomAgent(game)
 opponent = GoodAgent(game)
+# opponent = RandomAgent(game)
 
 
 def resultsString(winners):
@@ -81,11 +49,11 @@ def trainModel(model, states, qValues):
 
 
 
-GAME_COUNT = 300
+GAME_COUNT = 100
 TRAIN_COUNT = 0
 
-qValues = []
-states = []
+qValues = np.array([])
+states = np.array([])
 
 results = {
     "wins": []
@@ -95,6 +63,7 @@ results = {
 gameResults = playTrainingGames(GAME_COUNT, game, model, opponent)
 qValues = np.array(list(qValues) + list(gameResults["pastBoardQValues"]))
 states = np.array(list(states) + list(gameResults["pastBoardStates"]))
+results["wins"].append(gameResults["winners"].count(1))
 print("Initial Score - {}".format(resultsString(gameResults["winners"])))
 
 while True:
@@ -107,8 +76,16 @@ while True:
 
         gameResults = playTrainingGames(GAME_COUNT, game, model, opponent)
 
-        qValues = np.array(list(qValues) + list(gameResults["pastBoardQValues"]))
-        states = np.array(list(states) + list(gameResults["pastBoardStates"]))
+        selectedTrains = np.array([random.random()<2/3 for i in range(len(qValues))])
+        qValues = np.array(list(qValues[selectedTrains]) + list(gameResults["pastBoardQValues"]))
+        states = np.array(list(states[selectedTrains]) + list(gameResults["pastBoardStates"]))
+
+        # # # Using this with GAME_COUNT=100 give mostly stable training
+        # qValues = np.array(list(qValues[::2]) + list(gameResults["pastBoardQValues"]))
+        # states = np.array(list(states[::2]) + list(gameResults["pastBoardStates"]))
+
+        # qValues = np.array(list(qValues) + list(gameResults["pastBoardQValues"]))
+        # states = np.array(list(states) + list(gameResults["pastBoardStates"]))
         # qValues = gameResults["pastBoardQValues"]
         # states = gameResults["pastBoardStates"]
 
@@ -141,7 +118,7 @@ while True:
 
 print("Finished Training, Evaluating Final Agent...")
 
-gameResults = playTrainingGames(100, game, model, opponent)
+gameResults = playTrainingGames(GAME_COUNT, game, model, opponent)
 print(resultsString(gameResults["winners"]))
 
 

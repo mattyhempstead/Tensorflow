@@ -1,16 +1,20 @@
 import numpy as np
+import random
+# from selectMove import selectMoveMax, selectMoveOdds
+import selectMove
 
 def playTrainingGames(n, game, model, opponent):
     pastBoardQValues = []
     pastBoardStates = []
     winners = []
 
+
     for k in range(n):
 
         while True:
             if game.turn == 1:
                 moveRanks = getMoveRanks(game, model)
-                move = moveRanks.argmax()
+                move = selectMove.maxMove(moveRanks)
                 winner = game.move(move)
 
                 # Add q value for move unless first move
@@ -62,4 +66,5 @@ def getMoveRanks(game, model):
             game.removePiece(i,moveIndex)
 
     return moveRanks
+
 

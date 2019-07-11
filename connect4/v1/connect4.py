@@ -165,28 +165,6 @@ class Connect4Game():
 
 
 
-
-    # def playGameAgainstBots(self, botA, botB):		
-    # 	# Plays a whole game between bot A and bot B, with bot A going first
-    # 	# Returns 1 if botA wins, -1 if botB wins, and 0 if tie
-
-    # 	while True:		# Loop each move
-
-    # 		# Play move
-    # 		selectedMove = -1
-    # 		if self.turn == 1:
-    # 			selectedMove = botA.getMove()
-    # 		else:
-    # 			selectedMove = botB.getMove()
-
-    # 		winner = self.move(selectedMove)
-
-    # 		if winner != None:
-    # 			self.resetGame()
-    # 			return winner
-
-
-
 class RandomAgent():
     def __init__(self, game):
         self.game = game
@@ -281,104 +259,6 @@ class GoodAgent():
                 self.validMoveCount += 1
         #return self.validMoves[ self.game.turnNum % self.validMoveCount ]
         return self.validMoves[ random.randint(0,self.validMoveCount-1) ]
-
-
-
-
-
-# class botGood():
-# 	def __init__(self, game):
-# 		self.game = game
-# 		self.validMoves = np.zeros(7, dtype="int8")
-# 		self.validMoveCount = 0
-
-# 	def getMove(self):
-
-# 		# Check for winning placements
-# 		for col in range(7):
-# 			# If move has no free slots, skip this column
-# 			if self.game.board[col][5] != 0:
-# 				continue
-
-# 			# Find row which piece would be placed in this column
-# 			row = 0
-# 			for row in range(6):
-# 				if self.game.board[col][row] == 0:
-# 					break
-
-# 			winner = self.game.doesMoveEndGame(col, row, self.game.turn)
-
-# 			if winner == None:
-# 				continue
-# 			return col
-
-
-# 		# Return a random 'safe' move
-# 		self.validMoves.fill(0)
-# 		self.validMoveCount = 0
-
-        
-# 		# Check for blocking placements
-# 		for col in range(7):
-# 			# If move has no free slots, skip this column
-# 			if self.game.board[col][5] != 0:
-# 				continue
-
-# 			# Find row which piece would be placed in this column
-# 			row = 0
-# 			for row in range(6):
-# 				if self.game.board[col][row] == 0:
-# 					break
-
-
-# 			# If piece blocks opponent, always play here
-# 			winner = self.game.doesMoveEndGame(col, row, -self.game.turn)
-# 			if winner == -self.game.turn:
-# 				return col
-
-
-# 			# Add moves that don't cause opponent to win next turn (safe moves)
-# 			if row == 5 or self.game.doesMoveEndGame(col, row+1, -self.game.turn) == None:
-# 				self.validMoves[self.validMoveCount] = col
-# 				self.validMoveCount += 1
-
-
-# 		# Pick a random move from this list of 'safe' moves
-# 		if self.validMoveCount > 0:
-# 			#return self.validMoves[ self.game.turnNum % self.validMoveCount ]
-# 			return self.validMoves[ random.randint(0,self.validMoveCount-1) ]
-
-
-# 		# Return a random move
-# 		self.validMoves.fill(0)
-# 		self.validMoveCount = 0
-# 		for i in range(7):		# Add all possible moves to valid moves list
-# 			if self.game.isValidMove(i):
-# 				self.validMoves[self.validMoveCount] = i
-# 				self.validMoveCount += 1
-# 		#return self.validMoves[ self.game.turnNum % self.validMoveCount ]
-# 		return self.validMoves[ random.randint(0,self.validMoveCount-1) ]
-
-
-
-
-
-# class botRandom():
-# 	def __init__(self, game):
-# 		self.game = game
-# 		self.validMoves = np.zeros(7, dtype="int8")
-# 		self.validMoveCount = 0
-
-# 	def getMove(self):
-# 		self.validMoves.fill(0)
-# 		self.validMoveCount = 0
-
-# 		for i in range(7):		# for all possible moves
-# 			if self.game.isValidMove(i):
-# 				self.validMoves[self.validMoveCount] = i
-# 				self.validMoveCount += 1
-
-# 		return self.validMoves[ random.randint(0,self.validMoveCount-1) ]
 
 
 
