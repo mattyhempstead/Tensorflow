@@ -10,8 +10,28 @@ If instead the agent is trained on cumulative moves from the past, it improves a
 
 Was able to get good convergence for one run with GAME_COUNT=100 and a training data function of `x = x[::2] + y`
 This was able to reach 80% win rate and remained around a stable 70% for many generations.
+Reached a loss of ~0.41 with 3000 training samples per train.
 
 Tried a second run with a function `x = x[i for i in x if 66% chance] + y`.
 This run was not able to get better than 50% win rate and remained around 25%.
+
+
+
+# Network goal
+
+Currrently network outputs a Q-value ranking each of the possible future states.
+Highest value is selected.
+This limits the networks exploration possibilities.
+
+Should instead have network select move based on probabilities of move outputs.
+
+
+
+Network outputs policy 
+
+
+Network predicts future state.
+Network rates future state to select move.
+
 
 

@@ -95,6 +95,7 @@ results = {
 gameResults = playTrainingGames(GAME_COUNT, game, model, opponent)
 qValues = np.array(list(qValues) + list(gameResults["pastBoardQValues"]))
 states = np.array(list(states) + list(gameResults["pastBoardStates"]))
+results["wins"].append(gameResults["winners"].count(1))
 print("Initial Score - {}".format(resultsString(gameResults["winners"])))
 
 while True:
@@ -107,7 +108,7 @@ while True:
 
         gameResults = playTrainingGames(GAME_COUNT, game, model, opponent)
 
-        selectedTrains = np.array([random.random()<2/3 for i in range(len(qValues))])
+        selectedTrains = np.array([random.random()<1/3 for i in range(len(qValues))])
         qValues = np.array(list(qValues[selectedTrains]) + list(gameResults["pastBoardQValues"]))
         states = np.array(list(states[selectedTrains]) + list(gameResults["pastBoardStates"]))
 
@@ -149,7 +150,7 @@ while True:
 
 print("Finished Training, Evaluating Final Agent...")
 
-gameResults = playTrainingGames(100, game, model, opponent)
+gameResults = playTrainingGames(GAME_COUNT, game, model, opponent)
 print(resultsString(gameResults["winners"]))
 
 

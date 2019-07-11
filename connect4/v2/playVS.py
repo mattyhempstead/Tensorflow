@@ -38,6 +38,9 @@ while True:
         move = moveRanks.argmax()
         winner = game.move(move)
 
+        print("")
+        print(", ".join([str(round(i, 2)) for i in moveRanks]))
+
     else:
         game.printGame()
         
