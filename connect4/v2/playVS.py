@@ -23,7 +23,7 @@ from playTrainingGames import playTrainingGames, getMoveRanks
 import selectMove
 
 game = Connect4Game()
-
+goodAgent = GoodAgent(game)
 
 while True:
     if game.turn == 1:
@@ -43,6 +43,9 @@ while True:
                 move = int(move)-1
                 if 0 <= move <= 6 and game.isValidMove(move):
                     break
+            elif move.upper() == "G":
+                move = goodAgent.getMove()
+                break
                     
             print("Invalid Move")
             

@@ -49,8 +49,7 @@ def trainModel(model, states, rewards):
 
 
 
-GAME_COUNT = 100
-TRAIN_COUNT = 0
+GAME_COUNT = 1000
 
 rewards = np.array([])
 states = np.array([])
@@ -95,16 +94,18 @@ while True:
             resultsString(gameResults["winners"])
         ))
 
-        if not os.path.exists("models/cp"):	
-            os.mkdir("models/cp")
-        model.save("models/cp/model_{}-{}.h5".format(
-            len(os.listdir("models/cp")),
-            gameResults["winners"].count(1)
-        ))
-
         # Add wins result
         results["wins"].append(gameResults["winners"].count(1))
 
+        # Save model
+        if not os.path.exists("models/cp"):	
+            os.mkdir("models/cp")
+        # Only save model if score is at least 90% the score of best model
+        if results["wins"][-1] >= max(results["wins"])*0.9:     
+            model.save("models/cp/model_{}-{}.h5".format(
+                len(os.listdir("models/cp")),
+                gameResults["winners"].count(1)
+            ))
 
 
     # Graph results so far

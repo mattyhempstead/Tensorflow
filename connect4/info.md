@@ -109,3 +109,10 @@ e.g. An agent might only be trained to output 0.1 and 0.15 for a move near the b
 yet it will still learn to select the second move over the first.
 
 This method will also encourage winning quicker.
+
+
+
+# Actor Critic
+Actor network generates a policy
+Critic network produces value this policy?
+
