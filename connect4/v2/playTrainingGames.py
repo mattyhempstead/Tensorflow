@@ -1,6 +1,5 @@
 import numpy as np
 import random, sys
-# from selectMove import selectMoveMax, selectMoveOdds
 import selectMove
 
 def playTrainingGames(n, game, model, opponent, d=0.9):

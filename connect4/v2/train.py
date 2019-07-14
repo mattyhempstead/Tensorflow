@@ -49,7 +49,7 @@ def trainModel(model, states, rewards):
 
 
 
-GAME_COUNT = 1000
+GAME_COUNT = 100
 
 rewards = np.array([])
 states = np.array([])
@@ -100,8 +100,8 @@ while True:
         # Save model
         if not os.path.exists("models/cp"):	
             os.mkdir("models/cp")
-        # Only save model if score is at least 90% the score of best model
-        if results["wins"][-1] >= max(results["wins"])*0.9:     
+        # Only save model if score is at least x% the score of best model
+        if results["wins"][-1] >= max(results["wins"])*0.92:     
             model.save("models/cp/model_{}-{}.h5".format(
                 len(os.listdir("models/cp")),
                 gameResults["winners"].count(1)
