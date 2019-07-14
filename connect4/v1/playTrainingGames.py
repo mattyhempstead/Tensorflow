@@ -50,21 +50,27 @@ def playTrainingGames(n, game, model, opponent):
 
 
 def getMoveRanks(game, model):
+    '''
+        Gets the move ranks for each of the valid moves.
+        Valid moves are all predicted in one model.predict() call as that is faster to compute.
+    '''
+
     moveRanks = np.zeros(7, dtype=float)
 
+    states = []
+
+    validMoves = [i for i in range(7) if (game.isValidMove(i))]
+    for i in validMoves:
+        game.placeCol(i)
+        states.append(game.getInput())
+        game.removeCol(i)
+
+    states = np.array(states)
+    predictions = model.predict(states)
+
     for i in range(7):
-        moveIndex = game.getValidMove(i)
-        if moveIndex == -1:
-            moveRanks[i] = 0
-        else:
-            game.placePiece(i,moveIndex)
-
-            boardInput = np.array([game.getInput()])
-            q = model.predict(boardInput)[0][0]
-            moveRanks[i] = q
-
-            game.removePiece(i,moveIndex)
+        if i in validMoves:
+            moveRanks[i] = predictions[validMoves.index(i)][0]
 
     return moveRanks
-
 

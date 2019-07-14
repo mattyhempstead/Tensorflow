@@ -59,6 +59,16 @@ class Connect4Game():
     def removePiece(self, col, row):
         self.board[col][row][0] = 0
 
+    def placeCol(self, col):
+        row = self.getValidMove(col)
+        self.placePiece(col,row)
+    
+    def removeCol(self, col):
+        for i in range(5,-1,-1):
+            if self.board[col][i][0] != 0:
+                self.board[col][i][0] = 0
+                return
+
     def doesMoveEndGame(self, col, row, turn):	
         ''' 
             Returns whether moving in a particular position ends the game \n
@@ -161,7 +171,7 @@ class Connect4Game():
         if self.turn == -1:
             return self.board * -1
         else:
-            return self.board
+            return self.board * 1
 
 
 
