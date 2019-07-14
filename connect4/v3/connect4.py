@@ -1,5 +1,4 @@
 import sys, math, random, numpy as np
-import selectMove
 
 class Connect4Game():
     def __init__(self):
@@ -189,14 +188,7 @@ class Connect4Game():
             saArray.append(self.getInput(i))
         saArray = np.array(saArray)
         predictions = model.predict(saArray)
-
-        # moveRanks = np.zeros(7, dtype=float)
-        # for i in range(7):
-        #     if i in validMoves:
-        #         moveRanks[i] = predictions[validMoves.index(i)][0]
-
-        # moveArg = predictions.argmax()
-        moveArg = selectMove.maxMoveProb(predictions, 0.9)
+        moveArg = self.selectMove(predictions, 0.9)
 
         move = validMoves[moveArg]
         qValue = predictions[moveArg]
@@ -225,6 +217,15 @@ class Connect4Game():
         qValue = predictions[moveArg][0]
         return qValue
 
+    def selectMove(self, predictions, exploit=1):
+        ''' 
+            Selects index of highest q-value from predictions array with probability equal to exploit
+            Otherwise returns a random move
+        '''
+        if exploit == 1 or random.random() <= exploit:
+            return predictions.argmax()
+
+        return random.randint(0, len(predictions)-1)
 
 
 

@@ -1,8 +1,12 @@
 import numpy as np
 import random, sys
-import selectMove
 
 def playTrainingGames(n, game, model, opponent, discountFactor=0.9):
+    '''
+        Plays n games between model and opponent. \n
+        Returns the data of all the games which can be used for training. \n 
+    '''
+
     # Each move in each game adds an element to these arrays
     saPairs = []
     sPrimes = []
