@@ -175,10 +175,10 @@ class Connect4Game():
         moveArr[move] = 1
         return np.append(self.getBoardState(), moveArr)
 
-    def getMove(self, model):
+    def getMove(self, model, exploit=1):
         '''
             Calculates the move made by an agent in the current game. \n
-            Returns the index of the move, its Q-value, and the s-a input in a 3-tuple. \n
+            Returns various values such as index of the move, its Q-value, and the s-a input in a dictionary. \n
              - Can be made more efficient by getting .copy's of the same .getInput()?
         '''
         validMoves = [i for i in range(7) if (self.isValidMove(i))]
@@ -188,7 +188,7 @@ class Connect4Game():
             saArray.append(self.getInput(i))
         saArray = np.array(saArray)
         predictions = model.predict(saArray)
-        moveArg = self.selectMove(predictions, 0.9)
+        moveArg = self.selectMove(predictions, exploit)
 
         move = validMoves[moveArg]
         qValue = predictions[moveArg]

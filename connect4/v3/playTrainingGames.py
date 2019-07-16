@@ -1,10 +1,12 @@
 import numpy as np
 import random, sys
 
-def playTrainingGames(n, game, model, opponent, discountFactor=0.9):
+def playTrainingGames(n, game, model, opponent, discountFactor=0.9, exploit=1):
     '''
         Plays n games between model and opponent. \n
         Returns the data of all the games which can be used for training. \n 
+        
+        exploit -- The chance of selecting chosen move (complement of selecting random move)
     '''
 
     # Each move in each game adds an element to these arrays
@@ -20,7 +22,7 @@ def playTrainingGames(n, game, model, opponent, discountFactor=0.9):
         while True:
             if game.turn == 1:
 
-                move = game.getMove(model)
+                move = game.getMove(model, exploit)
                 winner = game.move(move["move"])
 
                 # Add move to memory
@@ -29,7 +31,7 @@ def playTrainingGames(n, game, model, opponent, discountFactor=0.9):
                 # Add qValue for next move to memory
                 if game.turnNum > 1:
                     qValues.append(
-                        move["qValue"] #* discountFactor
+                        move["qValue"] * discountFactor
                     )
 
                     # Append the result state from the previous move

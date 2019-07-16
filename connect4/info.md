@@ -116,3 +116,69 @@ This method will also encourage winning quicker.
 Actor network generates a policy
 Critic network produces value this policy?
 
+
+
+Rather than storing past predictions for Q values, I should instead store only the state-action-states.
+The new states don't need to have their Q-values updated.
+The old states have old predictions of Q-values.
+
+Network predicts a Q-value for a state and selects an actions.
+
+Any one game has a chain of states and predicted Q-values which led to that state.
+If the agent have only recently played each of those games, the Q-values between states will all be the same.
+However, if the agent is recalling these states from memory, the Q-values which they used to produce this chain of states will all be different.
+
+This method does not work with simply a value function for states.
+It is specifically for 
+
+Agent predicts a Q-value for a state-action pair.
+The agent is then trained on the actual Q-value for the state-action pair.
+This Q-value should be the immediate reward (zero) plus the maximum Q-value for all actions in the future state it ends up in.
+
+This is only for situtations where the agent 
+
+
+
+# Real Q-value
+
+Agent takes in action-state pairs.
+Predicts the Q-value for each of these action-state pairs and the largest Q-value is used to select the move it will make.
+For explorations purposes, a system could be implemented where the action with the largest Q-value is not always used, instead either a random move could be selected with probability p, or a similar system based on the rankings of Q-values could be used.
+
+
+For each move made, we store the state-action pair and the next state reached from this state-action pair.
+We should also store the Q-value which led to the selection of this state-action pair, however these are only used for the next training run and nothing else.
+
+For each s-a-s' triplet, find the maximum Q(s', a') by testing all possible a'
+This will require performing a full prediction for each move obtained from memory.
+
+The network is then trained such that Q(s, a) <- g*max_a'_Q(s', a')
+'g' refers to the discount factor to encourage obtaining rewards quicker (i.e. winning quicker)
+If s' is a game ending state, train Q(s, a) <- (1 if win, 0 if loss) 
+
+
+Train network and store s-a-s' and also an extra array containin Q for each s-a
+Select s-a-s' triplets from the past, and calculate the g*max_a'_(Q(s',a')) for the s'
+Append these max Q's to the Q array with their respective s-a-s'
+Train network to output values from the Q array given the respective s-a
+
+
+This will take a long time to compute Q-values for past memories depending on the proportion of current states vs past states
+
+
+# Extra training
+
+Instead of training with recent experience, have a memory bank of moves
+A batch of these moves should then be selected at random for training.
+This memory will need to be flushed at times to prevent memory leak.
+Maybe store up to 10000 memories, and every extra memory will randomly replace one of them.
+
+
+Now we train the agent to predict other values:
+
+Win percentage
+ - Split the network at the end and feed only the state to predict a single number win %
+
+Predict opponent
+ - Network tries to predict the next state it will encounter
+

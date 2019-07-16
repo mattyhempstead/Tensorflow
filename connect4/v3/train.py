@@ -1,5 +1,4 @@
-import os, sys
-import random
+import os, sys, random, math
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -61,9 +60,15 @@ def saveModel(model, wins):
 
 
 GAME_COUNT = 100
+MEMORY_RECALL_SIZE = 500
+MEMORY_MAX_SIZE = 50000     # Approximately 10 samples per game (~1GB per 100000?)
 
-saPairs = np.array([])
-sPrimes = np.array([])
+# Total number of times run train operation
+trainCount = 0
+
+# Memory for previous states
+# Might also need to store whether game was won or lost at one point
+memory = []
 
 results = {
     "wins": []
@@ -77,7 +82,14 @@ while True:
     for i in range(count):
 
         # Play games and store results
-        gameResults = playTrainingGames(GAME_COUNT, game, model, opponent)
+        gameResults = playTrainingGames(
+            GAME_COUNT, 
+            game, 
+            model, 
+            opponent,
+            discountFactor = 0.9, 
+            exploit = trainCount / (trainCount + 20) #1 - math.exp(-trainCount/100)
+        )
 
         # Print results
         print("#{}/{} - {}".format(
@@ -96,28 +108,51 @@ while True:
 
 
         # Train model
-        # Get some s-a-s' triplets from memory
-        selected = [random.random()<=0.66 for i in range(len(saPairs))]
-        saPairs = saPairs[selected]
-        sPrimes = sPrimes[selected]
 
+        
+        # Get some s-a-s' triplets from memory
+        print("Gathering memory states...")
+        memoryStates = random.sample(memory, min(MEMORY_RECALL_SIZE, len(memory)))
+        saPairs = [memory[0] for memory in memoryStates]
+        sPrimes = [memory[1] for memory in memoryStates]
 
         # Calculate the max q-value for each s'
         print("Predicting Q-values for memory states...")
-        qValues = np.array([[game.getMaxQValue(model, sPrime)] for sPrime in sPrimes])
+        qValues = [[game.getMaxQValue(model, sPrime)] for sPrime in sPrimes]
+
+
+        # print(np.array([[game.getMaxQValue(model, sPrime)] for sPrime in sPrimes]).shape)
+
+        # qValues = np.concatenate((qValues, [[game.getMaxQValue(model, sPrime)] for sPrime in sPrimes]))
 
         # print(len(qValues), len(sPrimes), len(saPairs))
         # for i in range(len(saPairs)):
         #     print(qValues[i], saPairs[i])
 
+        # print(qValues, gameResults["qValues"])
 
-        # Add new saPairs/q-values/sPrimes
-        saPairs = np.array(list(saPairs) + list(gameResults["saPairs"])) #np.concatenate(saPairs, gameResults["saPairs"])
-        qValues = np.array(list(qValues) + list(gameResults["qValues"])) #np.concatenate(qValues, gameResults["qValues"])
-        sPrimes = np.array(list(sPrimes) + list(gameResults["sPrimes"])) #np.concatenate(sPrimes, gameResults["sPrimes"])
+        # Add new experience to current training data 
+        print("Adding new experience to current training states...")
+        saPairs += list(gameResults["saPairs"])
+        qValues += list(gameResults["qValues"])
+        
+        saPairs = np.array(saPairs)
+        qValues = np.array(qValues)
 
-
+        # Train model with the selected states
         trainModel(model, saPairs, qValues)
+
+
+        # Add new experience to memory
+        # Add a maximum of MEMORY_MAX_SIZE memories before replacing old ones
+        #memory += list(zip(gameResults["saPairs"], gameResults["sPrimes"]))
+        for newMemory in zip(gameResults["saPairs"], gameResults["sPrimes"]):
+            if len(memory) < MEMORY_MAX_SIZE:
+                memory.append(newMemory)
+            else:
+                memory[random.randrange(MEMORY_MAX_SIZE)] = newMemory
+        print("Memory size: {}".format(len(memory)))
+
 
 
 
@@ -134,6 +169,9 @@ while True:
         # states = np.array(list(states) + list(gameResults["pastBoardStates"]))
         # rewards = gameResults["pastBoardRewards"]
         # states = gameResults["pastBoardStates"]
+
+        
+        trainCount += 1
 
 
     # Print final performance after all training epochs

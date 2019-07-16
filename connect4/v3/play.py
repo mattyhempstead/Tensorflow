@@ -19,8 +19,6 @@ except:
     sys.exit()
 
 
-
-
 game = Connect4Game()
 goodAgent = GoodAgent(game)
 
