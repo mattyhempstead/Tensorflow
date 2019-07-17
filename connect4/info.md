@@ -174,7 +174,8 @@ This memory will need to be flushed at times to prevent memory leak.
 Maybe store up to 10000 memories, and every extra memory will randomly replace one of them.
 
 
-Now we train the agent to predict other values:
+Now we train the agent to predict other values.
+This is called MTL (Multi Task Learning)
 
 Win percentage
  - Split the network at the end and feed only the state to predict a single number win %
@@ -182,5 +183,8 @@ Win percentage
 Predict opponent
  - Network tries to predict the next state it will encounter
 
+Use adversarialness to generate new tasks?
+
 
 "As these self-play games are happening, sample 2,048 positions from the most recent 500,000 games, along with whether the game was won or lost." - AlphaGo also had a refreshing memory bank
+

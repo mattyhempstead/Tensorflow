@@ -49,7 +49,7 @@ def saveModel(model, wins):
         ))
 
 
-GAME_COUNT = 1000
+GAME_COUNT = 100
 MEMORY_RECALL_SIZE = 1000
 MEMORY_MAX_SIZE = 10000     # Approximately 10 samples per game (~1GB per 100000?)
 EXPLORE_DECAY = 20
@@ -101,6 +101,18 @@ while True:
 
         ## Train model
 
+        # Add new experience to memory
+        # Add a maximum of MEMORY_MAX_SIZE memories before replacing old ones
+        #memory += list(zip(gameResults["saPairs"], gameResults["sPrimes"]))
+        for newMemory in zip(gameResults["saPairs"], gameResults["sPrimes"], gameResults["winMoves"]):
+            if len(memory) < MEMORY_MAX_SIZE:
+                memory.append(newMemory)
+            else:
+                memory[random.randrange(MEMORY_MAX_SIZE)] = newMemory
+        print("Memory size: {}".format(len(memory)))
+
+
+
         # Get some past experience from memory
         print("Gathering memory states...")
         memoryStates = random.sample(memory, min(MEMORY_RECALL_SIZE, len(memory)))
@@ -112,17 +124,10 @@ while True:
         print("Predicting Q-values for memory states...")
         qValues = [game.getMaxQValue(model, sPrime) for sPrime in sPrimes]
 
-
-        # Add new experience to current training data 
-        print("Adding new experience to current training states...")
-
         # Create Input
-        saPairs += list(gameResults["saPairs"])
         saPairs = np.array(saPairs)
 
         # Create Output
-        qValues += list(gameResults["qValues"].reshape(len(gameResults["qValues"])))
-        winMoves += list(gameResults["winMoves"])
         output = np.array(list(zip(qValues, winMoves)))
 
 
@@ -136,17 +141,6 @@ while True:
             # validation_data = (testImages, testLabels),
         )
         results["loss"].append(trainResults.history["loss"][0])
-
-
-        # Add new experience to memory
-        # Add a maximum of MEMORY_MAX_SIZE memories before replacing old ones
-        #memory += list(zip(gameResults["saPairs"], gameResults["sPrimes"]))
-        for newMemory in zip(gameResults["saPairs"], gameResults["sPrimes"], gameResults["winMoves"]):
-            if len(memory) < MEMORY_MAX_SIZE:
-                memory.append(newMemory)
-            else:
-                memory[random.randrange(MEMORY_MAX_SIZE)] = newMemory
-        print("Memory size: {}".format(len(memory)))
 
 
         trainCount += 1
@@ -170,8 +164,6 @@ while True:
     # plt.xticks(range(epochs))
     plt.legend()
     plt.show()
-
-
 
 
 print("Done")
