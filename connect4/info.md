@@ -182,3 +182,5 @@ Win percentage
 Predict opponent
  - Network tries to predict the next state it will encounter
 
+
+"As these self-play games are happening, sample 2,048 positions from the most recent 500,000 games, along with whether the game was won or lost." - AlphaGo also had a refreshing memory bank
