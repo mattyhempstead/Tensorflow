@@ -183,8 +183,56 @@ Win percentage
 Predict opponent
  - Network tries to predict the next state it will encounter
 
+
+Move prediction
+    What if the agent tried to predict its own future move?
+    Not only should it output the probability of taking each move, but it should also output in parallel the probability of taking each move one move from now.
+    This will force the network to think about which move it will be taking in the future. This might help with it learning the evaluating current moves.
+    Similarly, the network could output its predicted move 3 moves from now, and continuing until the end of the game.
+    Perhaps the network could start by predicting probabilities of taking current moves, and then slowly have extra tasks added where it attempts to predict moves further and further into the future.
+
+    Normally, a reinforcement learning agent learning to predict Q-values is trying to predict its future reward.
+    Thus, applying this technique to predict a Q-value one move from now will simply be training for the same function.
+    However, by forcing the network to predict which *move* it should take one move from now, even if these predictions are guided by Q-values, the network will learn to predict the concequences of its actions and will hopefully use this gained knowledge to guide its selection of prior moves which have not been made yet.
+    Agents could be trained to predict future moves (not reward) multiple timesteps from now. 
+
+    Why don't I just train the network to predict its Q-value 2 moves from now instead of one.
+    If the environment is stochastic, this is a valid training procedure which would teach the network the effect of randomness on its future rewards given it takes particular moves.
+    For example it might learn to take a move with less risk?
+
+    Crypto bot?
+    *Even the crypto bot could be trained to predict the reward it will gain making a particular trade.
+    *Could also be trained to predict 
+    Bot predicts its reward 1, 2, 5... time steps from now.
+
+    Maybe also tries to predict the future volume distribution.
+    
+
+
+
+
 Use adversarialness to generate new tasks?
 
 
 "As these self-play games are happening, sample 2,048 positions from the most recent 500,000 games, along with whether the game was won or lost." - AlphaGo also had a refreshing memory bank
 
+"an autoencoder objective can also be used as an auxiliary task"
+ - The ability to compress and image into its core representation can be used as an extra task for the object?
+ - Maybe the network uses this compressed representation as extra input? Or it could use the compressing/expanding layers themselves?
+
+
+
+# Policy 
+Takes in board state and outputs Q-values for each action
+Train action Q-values for selected action to be equal to highest move Q-value in s'
+At same time, do NOT train action Q-values for non-selected moves (train them to be the same as before)
+
+
+Give network s and it outputs a
+Use a to calculate s' and find Q-value for a'
+
+Store s, s' and argmax(a)
+When training with this data piece:
+ - Calculate a using s
+ - Calculate max(a') using s'
+ - Train a to be the same, but with a[argmax(a)] = max(a')
